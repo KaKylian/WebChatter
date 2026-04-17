@@ -1,5 +1,16 @@
 /* ==========================================================================
-9. FLASH MEDIA — INIT DOM & OBSERVERS
+    SOMMAIRE FLASH MÉDIA
+    1. INIT DOM & OBSERVERS
+    2. CONFIG & VALIDATION
+    3. LECTURE
+    4. ARRÊT
+    5. MISE À L'ÉCHELLE
+    6. UTILITAIRES
+========================================================================== */
+
+
+/* ==========================================================================
+    1. INIT DOM & OBSERVERS
 ========================================================================== */
 
 const flash        = document.getElementById('flashMedia');
@@ -48,7 +59,7 @@ observerMedia.observe(flashImage, { attributes: true, attributeFilter: ['src'] }
 
 
 /* ==========================================================================
-10. FLASH MEDIA — CONFIG & VALIDATION
+    2. CONFIG & VALIDATION
 ========================================================================== */
 
 const flashConfig_default = {
@@ -101,7 +112,7 @@ function flashValide() {
 
 
 /* ==========================================================================
-11. FLASH MEDIA — LECTURE 
+    3. LECTURE DU FLASH
 ========================================================================== */
 
 function whenImageLoad(image) {
@@ -242,7 +253,7 @@ async function flashStart(isReload = false) {
 
 
 /* ==========================================================================
-12. FLASH MEDIA — ARRÊT
+    4. ARRÊT
 ========================================================================== */
 
 let _resolveDone;
@@ -293,7 +304,7 @@ function flashStop(code) {
 
 
 /* ==========================================================================
-13. FLASH MEDIA — MISE À L'ÉCHELLE
+    5. MISE À L'ÉCHELLE
 ========================================================================== */
 
 function flashUpscale(media) {
@@ -336,7 +347,7 @@ function flashAjusterTitre(charsPerLine = 40) {
 
 
 /* ==========================================================================
-14. FLASH MEDIA — UTILITAIRES
+    6. UTILITAIRES
 ========================================================================== */
 
 function flashSyncDOM() {
@@ -382,7 +393,7 @@ function formatage(str) {
     };
     const spChrs = Object.keys(sym).join("");
 
-    const regex = new RegExp(`(?<=(?:([\\s${spChrs}])|>|^))([${spChrs}])(\\S(.*?\\S)?)\\2(?=(?:\\1|<|$))`, "g"); // => /(?<=(?:^|([\s*_-])|>))([*_-])(\S(.*?\S)?)\2(?=(?:<|\1|$))/g;
+    const regex = new RegExp(`(?<=(?:([\\s${spChrs}])|>|^))([${spChrs}])(\\S(.*?\\S)?)\\2(?=(?:\\1|<|$))`, "g"); // cherche des chaines comme: *exemple*, _autre_, -des mots-
 
     return str.replace(regex, (match, x, signe, contenu) => {
         let tag = sym[signe];

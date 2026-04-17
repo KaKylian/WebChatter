@@ -1,3 +1,7 @@
+/* ==========================================================================
+FLASH CONTROL - Panneau de régie
+========================================================================== */
+
 // Initialisation des zones de drag & drop au chargement
 document.addEventListener("DOMContentLoaded", function() {
     // Gestion des zones de Drag & Drop
@@ -24,14 +28,14 @@ function setupDropZone(zoneId, configKey, inputId) {
     });
 }
 
-let _pendingImageURL = "";
-let _pendingVideoURL = "";
+let pendingImageURL = "";
+let pendingVideoURL = "";
 
 function handleFile(file, zone, configKey) {
     if (file) {
         // Crée l'URL locale et l'assigne à la config
-        if (configKey === 'image') _pendingImageURL = URL.createObjectURL(file);
-        else                       _pendingVideoURL = URL.createObjectURL(file);
+        if (configKey === 'image') pendingImageURL = URL.createObjectURL(file);
+        else                       pendingVideoURL = URL.createObjectURL(file);
         zone.innerText = "✓ " + file.name;
         zone.style.borderColor = "#2ecc71";
         zone.style.color = "#2ecc71";
@@ -42,8 +46,8 @@ function handleFile(file, zone, configKey) {
 function lancerFlashDepuisControl() {
     // Mise à jour de la config globale avant le start
     flashConfig.texte = document.getElementById('ctrlTexte').value;
-    flashConfig.imageSrc = _pendingImageURL;
-    flashConfig.video.src = _pendingVideoURL;
+    flashConfig.imageSrc = pendingImageURL;
+    flashConfig.video.src = pendingVideoURL;
 
     const dureeVal = document.getElementById('ctrlDuree').value.trim().toLowerCase();
     flashConfig.duree = (dureeVal === 'auto' || dureeVal === 'inf') ? dureeVal : (parseFloat(dureeVal) || 'auto');
@@ -67,7 +71,7 @@ function lancerFlashDepuisControl() {
 // Fonction pour supprimer un média spécifique
 function clearMedia(type) {
     if (type === 'image') {
-        _pendingImageURL = "";
+        pendingImageURL = "";
         const zone = document.getElementById('dropImage');
         zone.innerText = "🖼️ Image : Glisser ou cliquer";
         zone.style.borderColor = "";
@@ -75,7 +79,7 @@ function clearMedia(type) {
         zone.style.background = ""; 
         document.getElementById('fileImg').value = "";
     } else {
-        _pendingVideoURL = "";
+        pendingVideoURL = "";
         const zone = document.getElementById('dropVideo');
         zone.innerText = "🎬 Vidéo : Glisser ou cliquer";
         zone.style.borderColor = "";
