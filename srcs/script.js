@@ -392,7 +392,6 @@ function formatage(str) {
         '-': 's'
     };
     const spChrs = Object.keys(sym).join("");
-
     const regex = new RegExp(`(?<=(?:([\\s${spChrs}])|>|^))([${spChrs}])(\\S(.*?\\S)?)\\2(?=(?:\\1|<|$))`, "g"); // cherche des chaines comme: *exemple*, _autre_, -des mots-
 
     return str.replace(regex, (match, x, signe, contenu) => {
