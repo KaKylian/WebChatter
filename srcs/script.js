@@ -392,9 +392,9 @@ function formatage(str) {
         '-': 's'
     };
     const spChrs = Object.keys(sym).join("");
-    const regex = new RegExp(`(?<=(?:([\\s${spChrs}])|>|^))([${spChrs}])(\\S(.*?\\S)?)\\2(?=(?:\\1|<|$))`, "g"); // cherche des chaines comme: *exemple*, _autre_, -des mots-
+    const regex = new RegExp(`(?<=(?:([\\s${spChrs}])|>|^))([${spChrs}])(\\S(.*?\\S)?)\\2(?=(?:\\1|<|$))`, "g"); // un passage encadré par un des spChrs (ex: *mot*, -une phrase-)
 
-    return str.replace(regex, (match, x, signe, contenu) => {
+    return str.replace(regex, (match, _, signe, contenu) => {
         let tag = sym[signe];
         const imbrique = formatage(contenu);
         return `<${tag}>${imbrique}</${tag}>`;
