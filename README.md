@@ -1,10 +1,10 @@
 # Flash Media
-Outil pour flash un média en plein écran sur une page web. On peut configurer:
+
+Outil pour flash un média en plein écran sur une page web. On peut configurer :
 * un titre
 * une image
 * une video
-
-> On ne peut pas afficher à la fois l'image et la vidéo en même temps : seul image sera affichée avec le son de la vidéo.
+> On ne peut pas afficher à la fois l'image et la vidéo en même temps : l'image sera affichée avec le son de la vidéo.
 
 ## Installation
 - Télécharger le dossier (sur github: bouton vert en haut à droite)
@@ -35,6 +35,7 @@ Outil pour flash un média en plein écran sur une page web. On peut configurer:
 * Une page web en html ou php
 
 ## Utilisation
+
 Toute la programmation de flash média se fait en javascript :
 ```js
 flashConfig.imageSrc = "images/image.jpg";
@@ -58,9 +59,7 @@ flashConfig.duree = 30; // durée du flash à 30s
 flashStart();
 // flash pendant 30s : texte + image + audio en x0.5 au timestamp 16.7s
 ```
-
 ---
-
 T'as sûrement remarqué que la configuration des src flash se fait dans les propriétés de **`flashConfig.(prop) = ...`** :
 
 | Propriété | Type de valeur | Description | Valeur par défaut |
@@ -84,3 +83,6 @@ T'as sûrement remarqué que la configuration des src flash se fait dans les pro
 * `flashStart()` pour afficher le flash
 * `flashStop()` pour arrêter le flash
 
+## Todo
+- [ ] ajout balise séparé `<audio>`
+- [ ] support formatage du titre (buggé pour l'instant)
