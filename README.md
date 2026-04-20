@@ -63,13 +63,13 @@ flashStart();
 T'as sûrement remarqué que la configuration du contenu du flash se fait dans les propriétés `flashConfig.(prop) = ...` :
 | Propriété | Type | Valeur par défaut | Valeurs acceptées | Rôle |
 |---|---|---|---|---|
+| `texte` | `string` | `""` | Texte / HTML | Contenu du titre affiché |
+| `imageSrc` | `string` | `""` | URL / blob URL | Source de l'image |
 | `video.src` | `string` | `""` | URL / blob URL | Source de la vidéo ou de l'audio |
 | `video.time` | `number` | `0` | `≥ 0` | Timestamp de départ (en secondes) |
 | `video.volume` | `number` | `1` | `0` → `1` | Volume de lecture |
 | `video.vitesse` | `number` | `1` | `0.1` → `16` | Vitesse de lecture |
 | `video.isAudio` | `boolean` | `false` | `true` / `false` | Masque la vidéo, diffuse l'audio seulement |
-| `imageSrc` | `string` | `""` | URL / blob URL | Source de l'image |
-| `texte` | `string` | `""` | Texte / HTML | Contenu du titre affiché |
 | `duree` | `string \| number` | `"auto"` | `"auto"` / `"inf"` / `number > 0` | Durée d'affichage — `auto` = fin de vidéo ou 7s, `inf` = boucle infinie, `number` = secondes fixes |
 
 ### Pour résumer il y a 3 instructions clés à retenir

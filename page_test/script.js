@@ -34,8 +34,13 @@ let pendingVideoURL = "";
 function handleFile(file, zone, configKey) {
     if (file) {
         // Crée l'URL locale et l'assigne à la config
-        if (configKey === 'image') pendingImageURL = URL.createObjectURL(file);
-        else                       pendingVideoURL = URL.createObjectURL(file);
+        if (configKey === 'image') {
+            URL.revokeObjectURL(pendingImageURL);
+            pendingImageURL = URL.createObjectURL(file);
+        } else {
+            URL.revokeObjectURL(pendingVideoURL);
+            pendingVideoURL = URL.createObjectURL(file);
+        }
         zone.innerText = "✓ " + file.name;
         zone.style.borderColor = "#2ecc71";
         zone.style.color = "#2ecc71";
@@ -71,6 +76,7 @@ function lancerFlashDepuisControl() {
 // Fonction pour supprimer un média spécifique
 function clearMedia(type) {
     if (type === 'image') {
+        URL.revokeObjectURL(pendingImageURL);
         pendingImageURL = "";
         const zone = document.getElementById('dropImage');
         zone.innerText = "🖼️ Image : Glisser ou cliquer";
@@ -79,6 +85,7 @@ function clearMedia(type) {
         zone.style.background = ""; 
         document.getElementById('fileImg').value = "";
     } else {
+        URL.revokeObjectURL(pendingVideoURL);
         pendingVideoURL = "";
         const zone = document.getElementById('dropVideo');
         zone.innerText = "🎬 Vidéo : Glisser ou cliquer";
