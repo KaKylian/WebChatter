@@ -53,35 +53,29 @@ flashStart();
 flashConfig.texte = "67";
 flashConfig.imageSrc = "images/burger.jpg";
 flashConfig.video.src = "videos/cinema.mp4";
-flashconfig.video.vitesse = 0.5;
-flashConfig.video.time = 16.7; // skip à 16.7s
-flashConfig.duree = 30; // durée du flash à 30s 
+flashconfig.video.vitesse = 0.5; // lecture au ralenti
+flashConfig.video.time = 16.7; // début du clip vidéo à 16.7s
+flashConfig.duree = 30; // durée flash à 30s 
 flashStart();
-// flash pendant 30s : texte + image + audio en x0.5 au timestamp 16.7s
+// flash pendant 30s : texte + image + clip audio en x0.5
 ```
----
-T'as sûrement remarqué que la configuration des src flash se fait dans les propriétés de **`flashConfig.(prop) = ...`** :
 
-| Propriété | Type de valeur | Description | Valeur par défaut |
-| --- | --- | --- | --- |
-| texte         | string                    | texte affiché                        | ""     |
-| imageSrc      | string                    | chemin vers l'image                  | ""     |
-| video.src     | string                    | chemin vers la vidéo                 | ""     |
-| video.time    | number >= 0               | timestamp vidéo (s)                  | 0      |
-| video.vitesse | 0.1 <= number <= 16       | vitesse de lecture vidéo             | 1      |
-| video.volume  | 0 <= number <= 1          | volume video                         | 1      |
-| video.isAudio | boolean                   | définit si la vidéo est affichée     | false  |
-| duree         | number > 0, "inf", "auto" | la durée de l'affichage du flash (s) | "auto" |
-
-`flashConfig.duree` est particulier :
-* number : force la durée du flash à cette valeur
-* "inf" : le flash ne s'arrête jamais, pour forcer l'arrêt on appelle `flashStop()`
-* "auto" : le flash se ferme à la fin de la vidéo, sinon se ferme au bout de 7s par défaut
+T'as sûrement remarqué que la configuration du contenu du flash se fait dans les propriétés `flashConfig.(prop) = ...` :
+| Propriété | Type | Valeur par défaut | Valeurs acceptées | Rôle |
+|---|---|---|---|---|
+| `video.src` | `string` | `""` | URL / blob URL | Source de la vidéo ou de l'audio |
+| `video.time` | `number` | `0` | `≥ 0` | Timestamp de départ (en secondes) |
+| `video.volume` | `number` | `1` | `0` → `1` | Volume de lecture |
+| `video.vitesse` | `number` | `1` | `0.1` → `16` | Vitesse de lecture |
+| `video.isAudio` | `boolean` | `false` | `true` / `false` | Masque la vidéo, diffuse l'audio seulement |
+| `imageSrc` | `string` | `""` | URL / blob URL | Source de l'image |
+| `texte` | `string` | `""` | Texte / HTML | Contenu du titre affiché |
+| `duree` | `string \| number` | `"auto"` | `"auto"` / `"inf"` / `number > 0` | Durée d'affichage — `auto` = fin de vidéo ou 7s, `inf` = boucle infinie, `number` = secondes fixes |
 
 ### Pour résumer il y a 3 instructions clés à retenir
-* `flashConfig` pour paramétrer le contenu du flash
-* `flashStart()` pour afficher le flash
-* `flashStop()` pour arrêter le flash
+* **`flashConfig`** pour paramétrer le contenu du flash
+* **`flashStart()`** pour afficher le flash
+* **`flashStop()`** pour arrêter le flash
 
 ## Todo
 - [ ] ajout balise séparé `<audio>`
