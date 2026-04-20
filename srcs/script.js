@@ -96,8 +96,7 @@ function flashValide() {
         cfg.time    = Math.max(parseFloat(cfg.time), 0) || 0;
         cfg.volume  = Math.min(Math.max(parseFloat(cfg.volume)  || 0, 0), 1);
         cfg.vitesse = Math.min(Math.max(parseFloat(cfg.vitesse) || 0, 0.1), 16);
-        cfg.isAudio = formatsAudio.includes(ext) || flashConfig.imageSrc
-            ? true : cfg.isAudio === true;
+        cfg.isAudio = formatsAudio.includes(ext) || flashConfig.imageSrc ? true : cfg.isAudio === true;
     }
 
     // Validation durée 
@@ -197,8 +196,10 @@ async function flashStart(isReload = false) {
             whenVideoMeta(flashVideo)
                 .then(() => {
                     if (!estActif()) throw new Error("session annulée.");
-                    if (!flashConfig.video.isAudio) flashUpscale(flashVideo);
-                    if (!flashConfig.video.isAudio) flashVideo.style.visibility = "visible";
+                    if (!flashConfig.video.isAudio) {
+                        flashUpscale(flashVideo);
+                        flashVideo.style.visibility = "visible";
+                    }
                     if (videoChanged) flashVideo.currentTime = flashConfig.video.time < flashVideo.duration 
                         ? flashConfig.video.time : 0;
                 })

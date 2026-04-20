@@ -10,7 +10,7 @@
     <script src="script.js" defer></script>
 </head>
 <body>
-    <?php require '../srcs/struct.html';?>
+    <?php include '../srcs/struct.php'; ?>
     
     <div id="flashControl">
         <h2>Flash Control - Panneau de Régie</h2>
