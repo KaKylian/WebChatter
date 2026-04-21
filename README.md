@@ -1,22 +1,22 @@
 # Flash Media
 
-Outil pour flash un média en plein écran sur une page web. On peut configurer :
+Outil pour flash un média en plein écran sur une page web. On peut configurer:
 * un titre
 * une image
 * une video
-> On ne peut pas afficher à la fois l'image et la vidéo en même temps : l'image sera affichée avec le son de la vidéo.
+>⚠️ On ne peut pas afficher l'image et la vidéo en même temps: la vidéo sera considérée comme audio.
 
 ## Installation
 - Télécharger le dossier (sur github: bouton vert en haut à droite)
 - Ajouter le dossier non compressé dans le dossier contenant la page
-- Importer les fichiers dans la page :
-  - dans `<head>` :
+- Importer les fichiers dans la page:
+  - dans `<head>`:
     ```html
     <link rel="stylesheet" href="flash-media/srcs/style.css">
     <script src="flash-media/srcs/script.js" defer></script>
     ```
-  - dans `<body>`, selon si on utilise html ou php :
-    - html :
+  - dans `<body>`, selon si on utilise html ou php:
+    - html:
     ```html
     <div id="flashMedia">
         <div class="mediaWrapper">
@@ -26,7 +26,7 @@ Outil pour flash un média en plein écran sur une page web. On peut configurer 
         </div>
     </div>
     ```
-    - php :
+    - php:
     ```php
     <?php include 'flash-media/srcs/struct.php'; ?>
     ```
@@ -36,31 +36,31 @@ Outil pour flash un média en plein écran sur une page web. On peut configurer 
 
 ## Utilisation
 
-Toute la programmation de flash média se fait en javascript :
+Toute la programmation de flash média se fait en javascript:
 ```js
 flashConfig.imageSrc = "images/image.jpg";
 flashConfig.texte = "ici du texte";
 flashStart();
-// flash une image avec du texte en bas de l'image
+// flash image + texte centré en bas de l'image
 ```
 ```js
 flashConfig.video.src = "videos/poulet.mp4";
 flashConfig.video.isAudio = true;
 flashStart();
-// joue l'audio d'une vidéo => flash invisible
+// vidéo en audio => lecture flash invisible
 ```
 ```js
-flashConfig.texte = "67";
+flashConfig.texte = "6 7";
 flashConfig.imageSrc = "images/burger.jpg";
-flashConfig.video.src = "videos/cinema.mp4";
+flashConfig.video.src = "videos/cinema.mp4"; // video.isAudio = true (sous-entendu car ya l'image)
 flashconfig.video.vitesse = 0.5; // lecture au ralenti
-flashConfig.video.time = 16.7; // début du clip vidéo à 16.7s
+flashConfig.video.time = 16.7; // début clip vidéo à 16.7s
 flashConfig.duree = 30; // durée flash à 30s 
 flashStart();
-// flash pendant 30s : texte + image + clip audio en x0.5
+// flash de 30s: texte + image + clip audio en x0.5
 ```
 
-T'as sûrement remarqué que la configuration du contenu du flash se fait dans les propriétés `flashConfig.(prop) = ...` :
+On remarque que la configuration du contenu du flash se fait dans les propriétés `flashConfig.(prop) = …`:
 | Propriété | Type | Valeur par défaut | Valeurs acceptées | Rôle |
 |---|---|---|---|---|
 | `texte` | `string` | `""` | Texte / HTML | Contenu du titre affiché |
@@ -72,11 +72,12 @@ T'as sûrement remarqué que la configuration du contenu du flash se fait dans l
 | `video.isAudio` | `boolean` | `false` | `true` / `false` | Masque la vidéo, diffuse l'audio seulement |
 | `duree` | `string \| number` | `"auto"` | `"auto"` / `"inf"` / `number > 0` | Durée d'affichage — `auto` = fin de vidéo ou 7s, `inf` = boucle infinie, `number` = secondes fixes |
 
-### Pour résumer il y a 3 instructions clés à retenir
-* **`flashConfig`** pour paramétrer le contenu du flash
-* **`flashStart()`** pour afficher le flash
-* **`flashStop()`** pour arrêter le flash
+### Pour résumer
+Il y a 3 instructions clés à retenir:
+* **`flashConfig`** pour définir le contenu du flash
+* **`flashStart()`** pour démarrer le flash
+* **`flashStop()`** pour forcer l'arrêt du flash en cours
 
 ## Todo
-- [ ] ajout balise séparé `<audio>`
-- [ ] support formatage du titre (buggé pour l'instant)
+- [ ] Nouvelle balise `<audio>`
+- [ ] Support formatage texte
