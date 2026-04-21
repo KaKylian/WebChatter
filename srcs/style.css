@@ -1,4 +1,4 @@
-#flashMedia {
+#webflash {
     position: fixed;
     top: 0;
     left: 0;
@@ -29,8 +29,8 @@
     -webkit-user-select: none;
 }
 
-#flashMedia img,
-#flashMedia video {
+#webflash img,
+#webflash video {
     display: block;
     visibility: hidden;
     width: 100%;
@@ -40,11 +40,11 @@
     z-index: 1;
 }
 
-#flashMedia img {
+#webflash img {
     z-index: 2;
 }
 
-#flashMedia h1 {
+#webflash h1 {
     --finalWidth: 95vw;
     --charsLine: 40;
     --fontSize: calc(var(--finalWidth) / (var(--charsLine) * 0.58));
@@ -77,15 +77,15 @@
 
 
 
-#flashMedia.noMedia {
+#webflash.noMedia {
     background-color: transparent;
 }
 
-#flashMedia.noMedia .mediaWrapper {
+#webflash.noMedia .mediaWrapper {
     width: 100%;
     height: 100%;
 }
 
-#flashMedia.noMedia h1 {
+#webflash.noMedia h1 {
     bottom: 10px;
 }

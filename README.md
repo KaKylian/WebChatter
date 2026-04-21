@@ -1,6 +1,5 @@
-# Flash Media
-
-Outil pour flash un média en plein écran sur une page web. On peut configurer:
+# Webflasher
+Webflasher permet d'afficher un média en plein écran sur une page web. On peut configurer:
 * un titre
 * une image
 * une video
@@ -8,46 +7,45 @@ Outil pour flash un média en plein écran sur une page web. On peut configurer:
 
 ## Installation
 - Télécharger le dossier (sur github: bouton vert en haut à droite)
-- Ajouter le dossier non compressé dans le dossier contenant la page
-- Importer les fichiers dans la page:
-  - dans `<head>`:
+- Ajouter le dossier décompressé dans le dossier contenant la page
+- Importer les fichiers dans la page
+  - dans `<head>` on importe le css et le js
     ```html
-    <link rel="stylesheet" href="flash-media/srcs/style.css">
-    <script src="flash-media/srcs/script.js" defer></script>
+    <link rel="stylesheet" href="Webflasher/srcs/style.css">
+    <script src="Webflasher/srcs/script.js" defer></script>
     ```
-  - dans `<body>`, selon si on utilise html ou php:
-    - html:
+  - dans `<body>` selon si on utilise html ou php
+    - html: on copie toute la structure
     ```html
-    <div id="flashMedia">
+    <div id="webflash">
         <div class="mediaWrapper">
             <video id="flashVideo"></video>
-            <img id="flashImg" src="flash-media/srcs/blank.png" alt="">
+            <img id="flashImg" src="Webflasher/srcs/blank.png" alt="">
             <h1 id="flashTitre"></h1>
         </div>
     </div>
     ```
-    - php:
+    - php: on l'importe directement
     ```php
-    <?php include 'flash-media/srcs/struct.php'; ?>
+    <?php include 'Webflasher/srcs/struct.php'; ?>
     ```
 
 ### Prérequis
 * Une page web en html ou php
 
 ## Utilisation
-
-Toute la programmation de flash média se fait en javascript:
+Toute la programmation du webflash se fait en javascript:
 ```js
 flashConfig.imageSrc = "images/image.jpg";
 flashConfig.texte = "ici du texte";
 flashStart();
-// flash image + texte centré en bas de l'image
+// webflash image + texte centré en bas de l'image
 ```
 ```js
 flashConfig.video.src = "videos/poulet.mp4";
 flashConfig.video.isAudio = true;
 flashStart();
-// vidéo en audio => lecture flash invisible
+// vidéo en audio => webflash invisible
 ```
 ```js
 flashConfig.texte = "6 7";
@@ -57,10 +55,10 @@ flashconfig.video.vitesse = 0.5; // lecture au ralenti
 flashConfig.video.time = 16.7; // début clip vidéo à 16.7s
 flashConfig.duree = 30; // durée flash à 30s 
 flashStart();
-// flash de 30s: texte + image + clip audio en x0.5
+// flash de 30s avec texte + image + clip audio en x0.5
 ```
 
-On remarque que la configuration du contenu du flash se fait dans les propriétés `flashConfig.(prop) = …`:
+On remarque que la configuration des médias de webflash se fait dans les propriétés `flashConfig.(prop) = …`:
 | Propriété | Type | Valeur par défaut | Valeurs acceptées | Rôle |
 |---|---|---|---|---|
 | `texte` | `string` | `""` | Texte / HTML | Contenu du titre affiché |
@@ -79,5 +77,5 @@ Il y a 3 instructions clés à retenir:
 * **`flashStop()`** pour forcer l'arrêt du flash en cours
 
 ## Todo
-- [ ] Nouvelle balise `<audio>`
-- [ ] Support formatage texte
+- [ ] Nouvelle balise `<audio>` séparé
+- [ ] Options de formatage texte (incomplet pour l'instant)

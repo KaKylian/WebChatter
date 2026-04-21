@@ -13,7 +13,7 @@
     1. INIT DOM & OBSERVERS
 ========================================================================== */
 
-const flash        = document.getElementById('flashMedia');
+const flash        = document.getElementById('webflash');
 const flashVideo   = document.getElementById('flashVideo');
 const flashImage   = document.getElementById('flashImg');
 const flashTitre   = document.getElementById('flashTitre');

@@ -1,4 +1,4 @@
-<div id="flashMedia">
+<div id="webflash">
     <div class="mediaWrapper">
         <video id="flashVideo"></video>
         <img id="flashImg" src="../srcs/blank.png" alt="">
