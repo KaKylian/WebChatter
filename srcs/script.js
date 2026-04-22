@@ -1,5 +1,5 @@
 /* ==========================================================================
-    SOMMAIRE FLASH MÉDIA
+    SOMMAIRE WEBFLASH
     1. INIT DOM & OBSERVERS
     2. CONFIG & VALIDATION
     3. LECTURE
@@ -82,10 +82,8 @@ function flashValide() {
     flashConfig.imageSrc  = encodeURI(String(flashConfig.imageSrc  ?? "").trim());
     flashConfig.texte     = String(flashConfig.texte ?? "").trim();
 
-    if (!flashConfig.video.src && !flashConfig.imageSrc && !flashConfig.texte) {
-        console.warn("ajoute au moins 1 src média ou un titre : ", flashConfig);
-        return false;
-    }
+    if (!flashConfig.video.src && !flashConfig.imageSrc && !flashConfig.texte) return false;
+    
 
     // Validation & ajustement des paramètres vidéo 
     if (flashConfig.video.src) {
@@ -105,7 +103,7 @@ function flashValide() {
         flashConfig.duree = dur > 0 ? dur : 'auto';
     }
 
-    console.log("Flash préparé : ", flashConfig);
+    console.log("Webflash préparé: ", flashConfig);
     return true;
 }
 
@@ -133,10 +131,10 @@ function whenVideoMeta(video) {
 let flashTimeout;
 
 async function flashStart(isReload = false) {
-    if (isReload && !flash._sessionId) throw new Error("pas de session active à recharger.");
+    if (isReload && !flash._sessionId) throw new Error("Pas de session active à recharger");
 
     flashStop(isReload ? "010_" : "");
-    if (!flashValide()) throw new Error("config invalide");
+    if (!flashValide()) throw new Error("Aucune src média ou texte");
     const videoChanged = flashSyncDOM();
 
     if (!isReload) {
@@ -195,7 +193,7 @@ async function flashStart(isReload = false) {
         jobs.push(
             whenVideoMeta(flashVideo)
                 .then(() => {
-                    if (!estActif()) throw new Error("session annulée.");
+                    if (!estActif()) throw new Error("Session annulée");
                     if (!flashConfig.video.isAudio) {
                         flashUpscale(flashVideo);
                         flashVideo.style.visibility = "visible";
@@ -205,7 +203,7 @@ async function flashStart(isReload = false) {
                 })
                 .catch(() => { 
                     if (hasImage) {
-                        console.warn("Erreur vidéo, image seule.");
+                        console.warn("Erreur vidéo, image seule");
                         flashVideo.removeAttribute('src');
                         flashVideo.load();
                         hasVideo = false;
@@ -218,7 +216,7 @@ async function flashStart(isReload = false) {
     }
 
     await Promise.allSettled(jobs);
-    if (!estActif()) throw new Error("session annulée.");
+    if (!estActif()) throw new Error("Session annulée");
     flash.style.visibility = "visible";
 
     // Lecture vidéo
@@ -231,16 +229,16 @@ async function flashStart(isReload = false) {
                 try { await flashVideo.play(); }
                 catch {
                     flashStop("1110"); 
-                    throw new Error("Erreur lecture vidéo bloquée.");
+                    throw new Error("Erreur lecture vidéo bloquée");
                 }
             } 
-            else if (hasImage) console.warn("Erreur lecture vidéo, image seule.");
+            else if (hasImage) console.warn("Erreur lecture vidéo, image seule");
             else {
                 flashStop("1110"); 
                 throw new Error("Erreur lecture vidéo.");
             }
         }
-        if (!estActif()) { flashVideo.pause(); throw new Error("session annulée."); }
+        if (!estActif()) { flashVideo.pause(); throw new Error("Session annulée."); }
     }
 
     // Gestion fermeture auto
