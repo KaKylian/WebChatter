@@ -2,11 +2,11 @@
 Webflasher est un widget qui permet d'afficher un média avec un titre en plein écran sur une page web.
 
 ## Propriétés
-* **Composition:** un flash ne peut pas être vide, il a au moins un texte et/ou un média
+* **Contenu:** un flash ne peut pas être vide, il a au moins un texte et/ou un média
 * **Unique:** on ne peut pas avoir plusieurs flashs lancés en même temps
 * **Invisible:** tout est caché jusqu'à ce qu'on lance un flash, une fois terminé c'est caché à nouveau
 * **Médias:** on peut mettre une image et/ou une vidéo/audio
->Si on met une image et une vidéo, la vidéo devient un audio: on ne peut pas afficher plusieurs médias en même temps.
+>Si on met une image et une vidéo dans un flash, la vidéo devient l'audio de l'image: on ne peut pas afficher plusieurs médias en même temps.
 
 ## Installation
 Toute la structure webflash est à insérer directement dans la page web:
@@ -77,11 +77,11 @@ On remarque que la configuration des médias du flash se fait dans les propriét
 
 ### Pour résumer
 C'est du js pur, il faut juste savoir manipuler les propriétés de `flashConfig` et 2 fonctions:
-* **`flashConfig`** -> configurer le contenu du webflash
-* **`flashStart()`** -> lancer un webflash 
-* **`flashStop()`** -> forcer l'arrêt d'un webflash 
+* **`flashConfig`** -> configurer le contenu du flash
+* **`flashStart()`** -> lancer un flash 
+* **`flashStop()`** -> forcer l'arrêt d'un flash 
 
 ## Todo
 - [ ] Simplifier l'installation (injection script ? balise html custom ?)
-- [ ] Options de formatage texte (marche à moitié)
+- [ ] Options de formatage texte (marche qu'à moitié)
 - [ ] Nouvelle balise `<audio>` séparé
