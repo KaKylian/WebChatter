@@ -1,41 +1,28 @@
 # Webflasher
-Webflasher est un widget qui permet d'afficher un média avec un titre en plein écran sur une page web.
+Webflasher (ou webflasher.js) permet d'afficher un média accompagné d'un titre en plein écran sur une page web.
+
+### Comment ça marche
+Le script insère la structure html stylisé `webflash` à une page web. Il contient aussi une bibliothèque de fonctions pour controller l'affichage de `webflash`.
 
 ## Propriétés
 * **Contenu:** un flash ne peut pas être vide, il a au moins un texte et/ou un média
-* **Unique:** on ne peut pas avoir plusieurs flashs lancés en même temps
+* **Unique:** on ne peut pas avoir plusieurs flashs à la fois
 * **Invisible:** tout est caché jusqu'à ce qu'on lance un flash, une fois terminé c'est caché à nouveau
 * **Médias:** on peut mettre une image et/ou une vidéo/audio
 >Si on met une image et une vidéo dans un flash, la vidéo devient l'audio de l'image: on ne peut pas afficher plusieurs médias en même temps.
 
 ## Installation
-Toute la structure webflash est à insérer directement dans la page web:
-- Télécharger le dossier (sur github bouton vert en haut à droite)
-- Ajouter le dossier décompressé dans le dossier contenant la page
-- Lier les fichiers avec la page
-    - dans `<head>` on importe le css et le js
-        ```html
-        <link rel="stylesheet" href="Webflasher/srcs/style.css">
-        <script src="Webflasher/srcs/script.js" defer></script>
-        ```
-    - dans `<body>` selon si on utilise html ou php
-        - html: on copie toute la structure
-            ```html
-            <div id="webflash">
-                <div class="mediaWrapper">
-                    <video id="flashVideo"></video>
-                    <img id="flashImg" src="Webflasher/srcs/blank.png" alt="">
-                    <h1 id="flashTitre"></h1>
-                </div>
-            </div>
-            ```
-        - php: on l'importe directement
-            ```php
-            <?php include 'Webflasher/srcs/struct.php'; ?>
-            ```
+- Télécharger le dépôt
+- Décompresser le dossier téléchargé
+- L'ajouter dans dans le dossier parent de la page web
+- Lier Webflasher avec la page
+```html
+<script src="Webflasher/webflasher.js" defer></script>
+```
+>`defer` est important ici, sans lui on risque de faire crash tout le script.
 
 ### Prérequis
-* Une page web en html ou php
+* Une page web html ou php
 
 ## Utilisation
 Toute la programmation du flash se fait en javascript:
@@ -49,7 +36,7 @@ flashStart();
 flashConfig.video.src = "videos/poulet.mp4";
 flashConfig.video.isAudio = true;
 flashStart();
-// vidéo en audio => webflash invisible
+// audio seul => pas de flash visuel
 ```
 ```js
 flashConfig.texte = "6 7";
@@ -73,15 +60,15 @@ On remarque que la configuration des médias du flash se fait dans les propriét
 | `video.vitesse` | `number` | `1` | `0.1` → `16` | Vitesse de lecture |
 | `video.isAudio` | `boolean` | `false` | `true` / `false` | Masque la vidéo, diffuse l'audio seulement |
 | `duree` | `string \| number` | `"auto"` | `"auto"` / `"inf"` / `number > 0` | Durée d'affichage — `auto` = fin de vidéo ou 7s, `inf` = boucle infinie, `number` = secondes fixes |
-> Quand `flashConfig.duree = "inf"` on peut forcer l'arrêt avec `flashStop()`, sinon le flash s'arrête tout seul après la durée spécifiée.
+>On peut forcer l'arrêt d'un flash en cours à n'importe quel moment avec `flashStop()` (pratique si `flashConfig.duree = "inf"`).
 
 ### Pour résumer
 C'est du js pur, il faut juste savoir manipuler les propriétés de `flashConfig` et 2 fonctions:
 * **`flashConfig`** -> configurer le contenu du flash
 * **`flashStart()`** -> lancer un flash 
 * **`flashStop()`** -> forcer l'arrêt d'un flash 
+>⚠️ Si `webflash` a des problèmes d'affichage vérifie les styles de la page: c'est sûrement qu'ils entrent en conflit avec ceux de `webflash`.
 
 ## Todo
-- [ ] Simplifier l'installation (injection script ? balise html custom ?)
 - [ ] Options de formatage texte (marche qu'à moitié)
-- [ ] Nouvelle balise `<audio>` séparé
+- [ ] Nouvelle balise `<audio>` séparé (`isAudio` devient obsolète)

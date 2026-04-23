@@ -1,16 +1,132 @@
 /* ==========================================================================
-    SOMMAIRE WEBFLASH
-    1. INIT DOM & OBSERVERS
-    2. CONFIG & VALIDATION
-    3. LECTURE
-    4. ARRÊT
-    5. MISE À L'ÉCHELLE
-    6. UTILITAIRES
+    SOMMAIRE
+    1. INJECTION HTML + CSS
+    2. INIT DOM & OBSERVERS
+    3. CONFIG & VALIDATION
+    4. LECTURE
+    5. ARRET
+    6. GESTION PLEIN ECRAN
+    7. UTILITAIRES
 ========================================================================== */
+
+/* ==========================================================================
+    1. INJECTION HTML + CSS
+========================================================================== */
+
+(function() {
+    // css
+    const style = document.createElement('style');
+    style.textContent = `
+        #webflash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        #webflash .mediaWrapper {
+            --w: var(--natW, 1);
+            --h: var(--natH, 1);
+            --scale: min(100vw / var(--w), 100vh / var(--h));
+            
+            width: calc(var(--w) * var(--scale));
+            height: calc(var(--h) * var(--scale));
+
+            position: relative;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #webflash img,
+        #webflash video {
+            display: block;
+            visibility: hidden;
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 20px black);
+            position: absolute;
+            z-index: 1;
+        }
+
+        #webflash img {
+            z-index: 2;
+        }
+
+        #webflash h1 {
+            --finalWidth: 95vw;
+            --charsLine: 40;
+            --fontSize: calc(var(--finalWidth) / (var(--charsLine) * 0.58));
+            --strokeSize: calc(var(--fontSize) / 10);
+
+            width: var(--finalWidth);
+            font-size: var(--fontSize);
+            -webkit-text-stroke: var(--strokeSize) black;
+
+            display: block;
+            visibility: hidden;
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            text-align: center;
+            margin: 0;
+            color: #f0f0f0;
+            font-family: system-ui, sans-serif;
+            font-weight: 700;
+            paint-order: stroke fill;
+            text-shadow: 0 0 10px black;
+            line-height: 1.2;
+            letter-spacing: 3px;
+            z-index: 10;
+        }
+
+        #webflash.noMedia {
+            background-color: transparent;
+        }
+
+        #webflash.noMedia .mediaWrapper {
+            width: 100%;
+            height: 100%;
+        }
+
+        #webflash.noMedia h1 {
+            bottom: 10px;
+        }`;
+    document.head.appendChild(style);
+
+    // html
+    const struct = document.createElement('div');
+    struct.id = 'webflash';
+    struct.innerHTML = `
+        <div class="mediaWrapper">
+            <video id="flashVideo"></video>
+            <img id="flashImg" alt="">
+            <h1 id="flashTitre"></h1>
+        </div>`;
+    document.body.appendChild(struct);
+})();
 
 
 /* ==========================================================================
-    1. INIT DOM & OBSERVERS
+    2-7 BIBLIOTHEQUE PRINCIPALE
+========================================================================== */
+
+/* ==========================================================================
+    2. INIT DOM & OBSERVERS
 ========================================================================== */
 
 const flash        = document.getElementById('webflash');
@@ -59,7 +175,7 @@ observerMedia.observe(flashImage, { attributes: true, attributeFilter: ['src'] }
 
 
 /* ==========================================================================
-    2. CONFIG & VALIDATION
+    3. CONFIG & VALIDATION
 ========================================================================== */
 
 const flashConfig_default = {
@@ -109,7 +225,7 @@ function flashValide() {
 
 
 /* ==========================================================================
-    3. LECTURE DU FLASH
+    4. LECTURE DU FLASH
 ========================================================================== */
 
 function whenImageLoad(image) {
@@ -171,7 +287,7 @@ async function flashStart(isReload = false) {
         jobs.push(
             whenImageLoad(flashImage)
                 .then(() => { 
-                    if (estActif()) flashUpscale(flashImage); 
+                    if (estActif()) flashScale(flashImage); 
                     flashImage.style.visibility = "visible";
                 })
                 .catch(() => { 
@@ -195,7 +311,7 @@ async function flashStart(isReload = false) {
                 .then(() => {
                     if (!estActif()) throw new Error("Session annulée");
                     if (!flashConfig.video.isAudio) {
-                        flashUpscale(flashVideo);
+                        flashScale(flashVideo);
                         flashVideo.style.visibility = "visible";
                     }
                     if (videoChanged) flashVideo.currentTime = flashConfig.video.time < flashVideo.duration 
@@ -252,7 +368,7 @@ async function flashStart(isReload = false) {
 
 
 /* ==========================================================================
-    4. ARRÊT
+    5. ARRET
 ========================================================================== */
 
 let _resolveDone;
@@ -303,10 +419,10 @@ function flashStop(code) {
 
 
 /* ==========================================================================
-    5. MISE À L'ÉCHELLE
+    6. GESTION PLEIN ECRAN
 ========================================================================== */
 
-function flashUpscale(media) {
+function flashScale(media) {
     if (!media || !flash._sessionId) return;
 
     const originalW = media.tagName === 'IMG' ? media.naturalWidth  : media.videoWidth;
@@ -320,7 +436,7 @@ function flashUpscale(media) {
 }
 
 function flashAjusterTitre(charsPerLine = 40) {
-    if (!flash._sessionId || !flashTitre.textContent.trim()) return;
+    if (!flash._sessionId || !flashTitre.textContent) return;
 
     const w = flashWrapper.offsetWidth  || window.innerWidth;
     const h = flashWrapper.offsetHeight || window.innerHeight;
@@ -346,7 +462,7 @@ function flashAjusterTitre(charsPerLine = 40) {
 
 
 /* ==========================================================================
-    6. UTILITAIRES
+    7. UTILITAIRES
 ========================================================================== */
 
 function flashSyncDOM() {
