@@ -16,10 +16,10 @@ Le script insère la structure html stylisé `webflash` à une page web. Il cont
 - Décompresser le dossier téléchargé
 - L'ajouter dans dans le dossier parent de la page web
 - Lier Webflasher avec la page
-```html
-<script src="Webflasher/webflasher.js" defer></script>
-```
->`defer` est important ici, sans lui on risque de faire crash tout le script.
+  ```html
+  <script src="Webflasher/webflasher.js" defer></script>
+  ```
+  >`defer` est important ici, sans lui on risque de faire crash tout le script.
 
 ### Prérequis
 * Une page web html ou php
