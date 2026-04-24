@@ -12,15 +12,16 @@ Le script insère une structure html `<div id="webflash">` stylisée. Il contien
 >Si on met une image et une vidéo dans un flash, la vidéo devient l'audio de l'image: on ne peut pas afficher plusieurs médias en même temps.
 
 ## Installation
-- Télécharger le dépôt github
-- Copier `webflasher.js` dans le dossier parent de la page web
-- Le charger sur la page:
-  ```html
-  <script src="webflasher.js" defer></script>
-  ```
-  >`defer` est important ici, sans lui on risque de faire crash tout le script.
+1. Télécharger le dépôt github
+2. Copier `webflasher.js` dans le dossier parent d'une page web
+3. Le charger sur une page:
+   ```html
+   <script src="webflasher.js" defer></script>
+   ```
+   >`defer` est important ici, sans lui on risque de faire crash tout le script.
 
 ### Prérequis
+* Un éditeur de code (VSCode, Sublime Text, …)
 * Une page web html ou php
 
 ## Utilisation
