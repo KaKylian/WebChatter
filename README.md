@@ -1,23 +1,22 @@
 # Webflasher
-Webflasher (ou webflasher.js) permet d'afficher un média accompagné d'un titre en plein écran sur une page web.
+Webflasher (ou webflasher.js) permet d'afficher un média accompagné d'un titre en plein écran sur une page web. C'est sous la forme d'un flash qui s'affiche d'un coup puis disparaît tout de suite une fois terminé.
 
 ### Comment ça marche
-Le script insère la structure html stylisé `webflash` à une page web. Il contient aussi une bibliothèque de fonctions pour controller l'affichage de `webflash`.
+Le script insère une structure html `<div id="webflash">` stylisée. Il contient aussi une bibliothèque d'objets et fonctions pour contrôler l'affichage de la structure.
 
 ## Propriétés
 * **Contenu:** un flash ne peut pas être vide, il a au moins un texte et/ou un média
 * **Unique:** on ne peut pas avoir plusieurs flashs à la fois
 * **Invisible:** tout est caché jusqu'à ce qu'on lance un flash, une fois terminé c'est caché à nouveau
-* **Médias:** on peut mettre une image et/ou une vidéo/audio
+* **Médias:** on peut mettre une image ou une vidéo
 >Si on met une image et une vidéo dans un flash, la vidéo devient l'audio de l'image: on ne peut pas afficher plusieurs médias en même temps.
 
 ## Installation
-- Télécharger le dépôt
-- Décompresser le dossier téléchargé
-- L'ajouter dans dans le dossier parent de la page web
-- Lier Webflasher avec la page
+- Télécharger le dépôt github
+- Copier `webflasher.js` dans le dossier parent de la page web
+- Le charger sur la page:
   ```html
-  <script src="Webflasher/webflasher.js" defer></script>
+  <script src="webflasher.js" defer></script>
   ```
   >`defer` est important ici, sans lui on risque de faire crash tout le script.
 

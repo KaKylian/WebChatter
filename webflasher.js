@@ -1,6 +1,6 @@
 /* ==========================================================================
     SOMMAIRE
-    1. INJECTION HTML + CSS
+    1. INJECTION HTML & CSS
     2. INIT DOM & OBSERVERS
     3. CONFIG & VALIDATION
     4. LECTURE
@@ -10,10 +10,10 @@
 ========================================================================== */
 
 /* ==========================================================================
-    1. INJECTION HTML + CSS
+    1. INJECTION HTML & CSS
 ========================================================================== */
 
-(function() {
+(function () {
     // css
     const style = document.createElement('style');
     style.textContent = `
@@ -122,7 +122,7 @@
 
 
 /* ==========================================================================
-    2-7 BIBLIOTHEQUE PRINCIPALE
+    2-7 BIBLIOTHEQUE
 ========================================================================== */
 
 /* ==========================================================================
@@ -292,7 +292,7 @@ async function flashStart(isReload = false) {
                 })
                 .catch(() => { 
                     if (hasVideo) {
-                        console.warn("Erreur image, audio seul.");
+                        console.warn("Erreur image, audio seul");
                         flashImage.style.visibility = "hidden";
                         flashImage.removeAttribute('src');
                         hasImage = false;
@@ -351,10 +351,10 @@ async function flashStart(isReload = false) {
             else if (hasImage) console.warn("Erreur lecture vidéo, image seule");
             else {
                 flashStop("1110"); 
-                throw new Error("Erreur lecture vidéo.");
+                throw new Error("Erreur lecture vidéo");
             }
         }
-        if (!estActif()) { flashVideo.pause(); throw new Error("Session annulée."); }
+        if (!estActif()) { flashVideo.pause(); throw new Error("Session annulée"); }
     }
 
     // Gestion fermeture auto
