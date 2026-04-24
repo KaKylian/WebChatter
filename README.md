@@ -69,5 +69,6 @@ C'est du js pur, il faut juste savoir manipuler les propriétés de `flashConfig
 >⚠️ Si `webflash` a des problèmes d'affichage vérifie les styles de la page: c'est sûrement qu'ils entrent en conflit avec ceux de `webflash`.
 
 ## Todo
-- [ ] Options de formatage texte (marche qu'à moitié)
-- [ ] Nouvelle balise `<audio>` séparé (`isAudio` devient obsolète)
+- [ ] Fix: isoler la struct html en remplaçant `<div id="webflash>` par un custom element `<webflash>` (isolation totale => plus de conflits css possible)
+- [ ] Issue: texte barré/souligné moche (`text-decoration` incompatible avec `text-stroke`)
+- [ ] Ajout: fonctionnalité flash audio + vidéo (ajouter une balise `<audio>` séparée)
