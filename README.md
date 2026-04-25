@@ -15,10 +15,11 @@ Le script insère une structure html `<div id="webflash">` stylisée. Il contien
 1. Télécharger le dépôt github
 2. Copier `webflasher.js` dans le dossier parent d'une page web
 3. Le charger sur une page:
-   ```html
-   <script src="webflasher.js" defer></script>
-   ```
-   >`defer` est important ici, sans lui on risque de faire crash tout le script.
+```html
+<script src="webflasher.js" defer></script>
+```
+> [!IMPORTANT]
+> `defer` est crucial ici, sans lui on risque de faire crash tout le script.
 
 ### Prérequis
 * Un éditeur de code (VSCode, Sublime Text, …)
@@ -66,10 +67,12 @@ On remarque que la configuration des médias du flash se fait dans les propriét
 C'est du js pur, il faut juste savoir manipuler les propriétés de `flashConfig` et 2 fonctions:
 * **`flashConfig`** -> configurer le contenu du flash
 * **`flashStart()`** -> lancer un flash 
-* **`flashStop()`** -> forcer l'arrêt d'un flash 
->⚠️ Si `webflash` a des problèmes d'affichage vérifie les styles de la page: c'est sûrement qu'ils entrent en conflit avec ceux de `webflash`.
+* **`flashStop()`** -> forcer l'arrêt d'un flash
+> [!WARNING]
+> Si `webflash` a des problèmes d'affichage vérifie les styles de la page: c'est sûrement qu'ils entrent en conflit avec ceux de `webflash`.
 
 ## Todo
-- [ ] Fix: isoler la struct html en remplaçant `<div id="webflash>` par un custom element `<webflash>` (isolation totale => plus de conflits css possible)
+- [ ] Fix: isoler la struct html en enveloppant `<div id="webflash>` par un custom element `<web-flash>` (isolation totale via web components => plus de conflits css possible)
 - [ ] Issue: texte barré/souligné moche (`text-decoration` incompatible avec `text-stroke`)
-- [ ] Ajout: fonctionnalité flash audio + vidéo (ajouter une balise `<audio>` séparée)
+- [ ] Ajout: fonctionnalité webflash audio + vidéo (ajouter une balise `<audio>` séparée)
+- [ ] Ajout: documentation avancée (plus tard, peut-être quand le projet sera abouti)
