@@ -61,7 +61,8 @@ On remarque que la configuration des médias du flash se fait dans les propriét
 | `video.vitesse` | `number` | `1` | `0.1` → `16` | Vitesse de lecture |
 | `video.isAudio` | `boolean` | `false` | `true` / `false` | Masque la vidéo, diffuse l'audio seulement |
 | `duree` | `string \| number` | `"auto"` | `"auto"` / `"inf"` / `number > 0` | Durée d'affichage — `auto` = fin de vidéo ou 7s, `inf` = boucle infinie, `number` = secondes fixes |
->On peut forcer l'arrêt d'un flash en cours à n'importe quel moment avec `flashStop()` (pratique si `flashConfig.duree = "inf"`).
+> [!TIP]
+> On peut forcer l'arrêt d'un flash en cours à n'importe quel moment avec `flashStop()` (pratique si `flashConfig.duree = "inf"`).
 
 ### Pour résumer
 C'est du js pur, il faut juste savoir manipuler les propriétés de `flashConfig` et 2 fonctions:
