@@ -9,7 +9,8 @@ Le script insère une structure html `<div id="webflash">` stylisée. Il contien
 * **Unique:** on ne peut pas avoir plusieurs flashs à la fois
 * **Invisible:** tout est caché jusqu'à ce qu'on lance un flash, une fois terminé c'est caché à nouveau
 * **Médias:** on peut mettre une image ou une vidéo
->Si on met une image et une vidéo dans un flash, la vidéo devient l'audio de l'image: on ne peut pas afficher plusieurs médias en même temps.
+> [!WARNING]
+> Si on met une image et une vidéo dans un flash, la vidéo devient l'audio de l'image: on ne peut pas afficher plusieurs médias en même temps.
 
 ## Installation
 1. Télécharger le dépôt github
@@ -69,7 +70,7 @@ C'est du js pur, il faut juste savoir manipuler les propriétés de `flashConfig
 * **`flashConfig`** -> configurer le contenu du flash
 * **`flashStart()`** -> lancer un flash 
 * **`flashStop()`** -> forcer l'arrêt d'un flash
-> [!WARNING]
+> [!CAUTION]
 > Si `webflash` a des problèmes d'affichage vérifie les styles de la page: c'est sûrement qu'ils entrent en conflit avec ceux de `webflash`.
 
 ## Todo
