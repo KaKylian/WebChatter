@@ -1,36 +1,13 @@
-if (document.querySelector('web-flash')) {
-    throw new Error("Webflasher: une balise <web-flash> existe déjà dans le DOM, retirez-la — webflasher.js l'injecte automatiquement.");
-}
+class Mediaflasher extends HTMLElement {
+    /* ========== CHAMPS PRIVEES ========== */
+    #flash        = null;
+    #flashVideo   = null;
+    #flashImage   = null;
+    #flashTitre   = null;
+    #flashWrapper = null;
 
-/* ===================================================================================================
-    SOMMAIRE
-    - CHAMPS PRIVEES
-    - CHAMPS PUBLICS
-    - CYCLE DE VIE
-        1. INJECTION HTML/CSS
-        2. INIT DOM/OBSERVERS
-    - METHODES PRIVEES
-        3. VALIDATION CONFIG
-        4. LECTURE
-        5. ARRET
-        6. GESTION FULLSCREEN
-    - API PUBLIQUE
-        7. UTILITAIRES
-=================================================================================================== */
-
-class WebFlash extends HTMLElement {
-    /* ========== CHAMPS PRIVES ========== */
-    #flash              = null;
-    #flashVideo         = null;
-    #flashImage         = null;
-    #flashTitre         = null;
-    #flashWrapper       = null;
-    #resizeTimeout      = null;
-    #mediaChangeTimeout = null;
-    #observerIgnore     = false;
-    #observerTitre      = null;
-    #observerMedia      = null;
-    #onResize           = () => {
+    #resizeTimeout = null;
+    #onResize = () => {
         clearTimeout(this.#resizeTimeout);
         this.#resizeTimeout = setTimeout(() => {
             if (!this.#sessionId) return;
@@ -38,6 +15,28 @@ class WebFlash extends HTMLElement {
             this.#flashAjusterTitre(chars);
         }, 100);
     };
+
+    #observerTitre = new MutationObserver(() => {
+        if (!this.#sessionId) return;
+        const chars = this.#flash.classList.contains('noMedia') ? 60 : 40;
+        this.#flashAjusterTitre(chars);
+        this.#flashTitre.style.visibility = this.#flashTitre.textContent.trim() ? "visible" : "hidden";
+    });
+
+    #mediaChangeTimeout = null;
+    #observerIgnore = false;
+    #observerMedia = new MutationObserver((mutations) => {
+        if (!this.#sessionId || this.#observerIgnore) return;
+        const changed = new Set(mutations.map(m => m.target));
+        clearTimeout(this.#mediaChangeTimeout);
+        this.#mediaChangeTimeout = setTimeout(() => {
+            changed.forEach(media => {
+                if (media === this.#flashVideo) this.config.video.src = this.#flashVideo.getAttribute('src') ?? "";
+                else this.config.imageSrc = this.#flashImage.getAttribute('src') ?? "";
+            });
+            this.#flashStart(true);
+        }, 0);
+    });
 
     #configDefault = {
         video: {
@@ -52,12 +51,11 @@ class WebFlash extends HTMLElement {
         duree:    "auto"
     };
 
+    #sessionId = null;
+    #settled   = false;
     #flashTimeout = null;
-    #sessionId    = null;
-    #settled      = false;
-
-    #resolveDone = null;
-    #rejectDone  = null;
+    #resolveDone  = null;
+    #rejectDone   = null;
 
     /* ========== CHAMPS PUBLICS ========== */
     config = structuredClone(this.#configDefault);
@@ -70,27 +68,24 @@ class WebFlash extends HTMLElement {
 
     connectedCallback() {
 
-        // ===========================================================================================
-        // 1. INJECTION HTML/CSS
-        // ===========================================================================================
-
         const style = document.createElement('style');
         style.textContent = `
-            #webflash {
-                position: fixed;
-                top: 0;
-                left: 0;
+            :host { all: initial !important; }
+
+            #flash {
+                overflow: hidden;
                 width: 100vw;
                 height: 100vh;
-                display: none;
+                border: none;
+                padding: 0;
+                margin: 0;
                 justify-content: center;
                 align-items: center;
-                z-index: 9999;
-                overflow: hidden;
                 background-color: rgba(0, 0, 0, 0.6);
             }
+            #flash:popover-open { display: flex; }
 
-            #webflash(.noMedia) {
+            #flash.noMedia {
                 background-color: transparent;
             }
 
@@ -98,7 +93,7 @@ class WebFlash extends HTMLElement {
                 --w: var(--natW, 1);
                 --h: var(--natH, 1);
                 --scale: min(100vw / var(--w), 100vh / var(--h));
-                
+
                 width: calc(var(--w) * var(--scale));
                 height: calc(var(--h) * var(--scale));
 
@@ -111,7 +106,7 @@ class WebFlash extends HTMLElement {
                 -webkit-user-select: none;
             }
 
-            #webflash(.noMedia) .mediaWrapper {
+            #flash.noMedia .mediaWrapper {
                 width: 100%;
                 height: 100%;
             }
@@ -161,13 +156,14 @@ class WebFlash extends HTMLElement {
                 z-index: 10;
             }
 
-            #webflash(.noMedia) h1 {
+            #flash.noMedia h1 {
                 bottom: 10px;
             }
         `;
 
         const struct = document.createElement('div');
-        struct.id = 'webflash';
+        struct.setAttribute('popover', 'manual');
+        struct.id = 'flash';
         struct.innerHTML = `
             <div class="mediaWrapper">
                 <video id="flashVideo"></video>
@@ -176,44 +172,20 @@ class WebFlash extends HTMLElement {
             </div>
         `;
 
+        this.shadowRoot.innerHTML = '';
         this.shadowRoot.appendChild(style);
         this.shadowRoot.appendChild(struct);
 
-        // ===========================================================================================
-        // 2. INIT DOM/OBSERVERS
-        // ===========================================================================================
-
-        this.#flash        = this.shadowRoot.getElementById('webflash');
+        this.#flash        = this.shadowRoot.getElementById('flash');
         this.#flashVideo   = this.shadowRoot.getElementById('flashVideo');
         this.#flashImage   = this.shadowRoot.getElementById('flashImg');
         this.#flashTitre   = this.shadowRoot.getElementById('flashTitre');
         this.#flashWrapper = this.shadowRoot.querySelector('.mediaWrapper');
 
         window.addEventListener('resize', this.#onResize);
-
-        this.#observerTitre = new MutationObserver(() => {
-            if (!this.#sessionId) return;
-            const chars = this.#flash.classList.contains('noMedia') ? 60 : 40;
-            this.#flashAjusterTitre(chars);
-            this.flashTitre.style.visibility = this.flashTitre.textContent.trim() ? "visible" : "hidden";
-        });
-
-        this.#observerMedia = new MutationObserver((mutations) => {
-            if (!this.#sessionId || this.#observerIgnore) return;
-            const changed = new Set(mutations.map(m => m.target));
-            clearTimeout(this.#mediaChangeTimeout);
-            this.#mediaChangeTimeout = setTimeout(() => {
-                changed.forEach(media => {
-                    if (media === this.flashVideo) this.config.video.src = this.flashVideo.getAttribute('src') ?? "";
-                    else this.config.imageSrc = this.flashImage.getAttribute('src') ?? "";
-                });
-                this.#flashStart(true);
-            }, 0);
-        });
-
-        this.#observerTitre.observe(this.flashTitre, { childList: true, characterData: true, subtree: true });
-        this.#observerMedia.observe(this.flashVideo, { attributes: true, attributeFilter: ['src'] });
-        this.#observerMedia.observe(this.flashImage, { attributes: true, attributeFilter: ['src'] });
+        this.#observerTitre.observe(this.#flashTitre, { childList: true, characterData: true, subtree: true });
+        this.#observerMedia.observe(this.#flashVideo, { attributes: true, attributeFilter: ['src'] });
+        this.#observerMedia.observe(this.#flashImage, { attributes: true, attributeFilter: ['src'] });
     }
 
     // cleanup
@@ -221,14 +193,11 @@ class WebFlash extends HTMLElement {
         window.removeEventListener('resize', this.#onResize);
         this.#observerTitre.disconnect();
         this.#observerMedia.disconnect();
+        if (this.#resolveDone) this.removeEventListener('flashSucces', this.#resolveDone);
+        if (this.#rejectDone)  this.removeEventListener('flashEchec',  this.#rejectDone);
     }
 
     /* ========== METHODES PRIVEES ========== */
-
-    // ===============================================================================================
-    // 3. VALIDATION CONFIG
-    // ===============================================================================================
-
     #flashValide() {
         this.config.video.src = encodeURI(String(this.config.video.src ?? "").trim());
         this.config.imageSrc  = encodeURI(String(this.config.imageSrc  ?? "").trim());
@@ -246,13 +215,14 @@ class WebFlash extends HTMLElement {
             cfg.vitesse = Math.min(Math.max(parseFloat(cfg.vitesse) || 0, 0.1), 16);
             cfg.isAudio = formatsAudio.includes(ext) || this.config.imageSrc ? true : cfg.isAudio === true;
         }
+        else this.config.video = { ...this.#configDefault.video }
 
         if (this.config.duree !== 'inf') {
             const dur = parseFloat(this.config.duree);
             this.config.duree = dur > 0 ? dur : 'auto';
         }
 
-        console.log("Webflash préparé: ", this.config);
+        console.log("flash préparé: ", this.config);
         return true;
     }
 
@@ -260,34 +230,30 @@ class WebFlash extends HTMLElement {
         this.#observerIgnore = true;
         let videoChange = false;
 
-        if (this.#flashVideo.getAttribute('src') !== this.flashConfig.video.src) {
+        if (this.#flashVideo.getAttribute('src') !== this.config.video.src) {
             videoChange = true;
-            if (this.flashConfig.video.src) this.#flashVideo.src = this.flashConfig.video.src;
+            if (this.config.video.src) this.#flashVideo.src = this.config.video.src;
             else this.#flashVideo.removeAttribute('src');
             this.#flashVideo.load();
         }
 
-        if (this.#flashImage.getAttribute('src') !== this.flashConfig.imageSrc) {
-            if (this.flashConfig.imageSrc) this.#flashImage.src = this.flashConfig.imageSrc;
+        if (this.#flashImage.getAttribute('src') !== this.config.imageSrc) {
+            if (this.config.imageSrc) this.#flashImage.src = this.config.imageSrc;
             else this.#flashImage.removeAttribute('src');
         }
 
-        this.#flashTitre.innerHTML = flashConfig.texte || "";
+        this.#flashTitre.innerHTML = this.config.texte || "";
 
         if (this.#flashVideo.getAttribute('src')) {
-            this.#flashVideo.volume       = this.flashConfig.video.volume;
-            this.#flashVideo.playbackRate = this.flashConfig.video.vitesse;
-            this.#flashVideo.muted        = this.flashConfig.video.volume === 0;
-            this.#flashVideo.loop         = this.flashConfig.duree === 'inf' || typeof this.flashConfig.duree === 'number';
+            this.#flashVideo.volume       = this.config.video.volume;
+            this.#flashVideo.playbackRate = this.config.video.vitesse;
+            this.#flashVideo.muted        = this.config.video.volume === 0;
+            this.#flashVideo.loop         = this.config.duree === 'inf' || typeof this.config.duree === 'number';
         }
 
         setTimeout(() => this.#observerIgnore = false, 0);
         return videoChange;
     }
-
-    // ===============================================================================================
-    // 4. AFFICHAGE & LECTURE DU FLASH
-    // ===============================================================================================
 
     #whenImageLoad(image) {
         if (image.complete && image.naturalWidth > 0) return Promise.resolve();
@@ -305,7 +271,7 @@ class WebFlash extends HTMLElement {
         });
     }
 
-    #flashStart(isReload = false) {
+    async #flashStart(isReload = false) {
         if (isReload && !this.#sessionId) throw new Error("Pas de session active à recharger");
 
         this.#flashStop(isReload ? "010_" : "");
@@ -319,23 +285,23 @@ class WebFlash extends HTMLElement {
         const sessionId = this.#sessionId; 
         const estActif  = () => this.#sessionId === sessionId;
 
-        let hasVideo = this.flashVideo.getAttribute('src');
-        let hasImage = this.flashImage.getAttribute('src');
-        let hasTexte = this.flashTitre.textContent.trim();
+        let hasVideo = this.#flashVideo.getAttribute('src');
+        let hasImage = this.#flashImage.getAttribute('src');
+        let hasTexte = this.#flashTitre.textContent.trim();
 
-        if (!hasImage && (this.flashConfig.video.isAudio || !hasVideo)) this.#flash.classList.add('noMedia');
+        if (!hasImage && (this.config.video.isAudio || !hasVideo)) this.#flash.classList.add('noMedia');
         else this.#flash.classList.remove('noMedia');
 
-        if (!hasVideo || this.flashConfig.video.isAudio) this.flashVideo.style.visibility = "hidden";
-        if (!hasImage) this.flashImage.style.visibility = "hidden";
-        if (!hasTexte) this.flashTitre.style.visibility = "hidden";
+        if (!hasVideo || this.config.video.isAudio) this.#flashVideo.style.visibility = "hidden";
+        if (!hasImage) this.#flashImage.style.visibility = "hidden";
+        if (!hasTexte) this.#flashTitre.style.visibility = "hidden";
         if (!isReload) {
             this.#flash.style.visibility = "hidden";
-            this.#flash.style.display    = "flex";
+            this.#flash.showPopover();
         }
 
         if (hasTexte) {
-            this.flashTitre.style.visibility = "visible";
+            this.#flashTitre.style.visibility = "visible";
             if (this.#flash.classList.contains('noMedia')) this.#flashAjusterTitre(60);
         }
 
@@ -344,16 +310,16 @@ class WebFlash extends HTMLElement {
 
         if (hasImage) {
             jobs.push(
-                this.#whenImageLoad(this.flashImage)
+                this.#whenImageLoad(this.#flashImage)
                     .then(() => { 
-                        if (estActif()) this.#flashScale(this.flashImage); 
-                        this.flashImage.style.visibility = "visible";
+                        if (estActif()) this.#flashScale(this.#flashImage); 
+                        this.#flashImage.style.visibility = "visible";
                     })
                     .catch(() => { 
                         if (hasVideo) {
                             console.warn("Erreur image, audio seul");
-                            this.flashImage.style.visibility = "hidden";
-                            this.flashImage.removeAttribute('src');
+                            this.#flashImage.style.visibility = "hidden";
+                            this.#flashImage.removeAttribute('src');
                             hasImage = false;
                             this.#flashAjusterTitre();
                         } else {
@@ -366,21 +332,21 @@ class WebFlash extends HTMLElement {
 
         if (hasVideo) {
             jobs.push(
-                this.#whenVideoMeta(this.flashVideo)
+                this.#whenVideoMeta(this.#flashVideo)
                     .then(() => {
                         if (!estActif()) throw new Error("Session annulée");
-                        if (!this.flashConfig.video.isAudio) {
-                            this.#flashScale(this.flashVideo);
-                            this.flashVideo.style.visibility = "visible";
+                        if (!this.config.video.isAudio) {
+                            this.#flashScale(this.#flashVideo);
+                            this.#flashVideo.style.visibility = "visible";
                         }
-                        if (videoChanged) this.flashVideo.currentTime = this.flashConfig.video.time < this.flashVideo.duration 
-                            ? this.flashConfig.video.time : 0;
+                        if (videoChanged) this.#flashVideo.currentTime = this.config.video.time < this.#flashVideo.duration 
+                            ? this.config.video.time : 0;
                     })
                     .catch(() => { 
                         if (hasImage) {
                             console.warn("Erreur vidéo, image seule");
-                            this.flashVideo.removeAttribute('src');
-                            this.flashVideo.load();
+                            this.#flashVideo.removeAttribute('src');
+                            this.#flashVideo.load();
                             hasVideo = false;
                         } else {
                             this.#flashStop("1110"); 
@@ -396,12 +362,12 @@ class WebFlash extends HTMLElement {
 
         // Lecture vidéo
         if (hasVideo) {
-            try { await this.flashVideo.play(); }
+            try { await this.#flashVideo.play(); }
             catch (err) {
-                if (err.name === 'NotAllowedError' && !this.flashConfig.video.isAudio) {
+                if (err.name === 'NotAllowedError' && !this.config.video.isAudio) {
                     console.warn("Autoplay bloqué, passage en mute");
-                    this.flashVideo.muted = true;
-                    try { await this.flashVideo.play(); }
+                    this.#flashVideo.muted = true;
+                    try { await this.#flashVideo.play(); }
                     catch {
                         this.#flashStop("1110"); 
                         throw new Error("Erreur lecture vidéo bloquée");
@@ -413,21 +379,17 @@ class WebFlash extends HTMLElement {
                     throw new Error("Erreur lecture vidéo");
                 }
             }
-            if (!estActif()) { this.flashVideo.pause(); throw new Error("Session annulée"); }
+            if (!estActif()) { this.#flashVideo.pause(); throw new Error("Session annulée"); }
         }
 
         // Gestion fermeture auto
-        if (typeof this.flashConfig.duree === 'number') {
-            this.#flashTimeout = setTimeout(() => this.#flashStop(1), this.flashConfig.duree * 1000);
-        } else if (this.flashConfig.duree === 'auto') {
-            if (hasVideo) this.flashVideo.onended = () => this.#flashStop(1);
+        if (typeof this.config.duree === 'number') {
+            this.#flashTimeout = setTimeout(() => this.#flashStop(1), this.config.duree * 1000);
+        } else if (this.config.duree === 'auto') {
+            if (hasVideo) this.#flashVideo.onended = () => this.#flashStop(1);
             else this.#flashTimeout = setTimeout(() => this.#flashStop(1), 7000);
         }
     }
-
-    // ===============================================================================================
-    // 5. ARRET DU FLASH
-    // ===============================================================================================
 
     #flashStop(code) {
         let ch = String(code).replace(/\D/g, "_").slice(0, 4);
@@ -435,20 +397,20 @@ class WebFlash extends HTMLElement {
 
         if (ch[0] != 0) {
             this.#sessionId = null;
-            this.#flash.style.display = "none";
+            this.#flash.hidePopover();
         }
         if (ch[1] != 0) {
             clearTimeout(this.#flashTimeout);
-            this.flashVideo.onended          = null;
-            this.flashVideo.onloadedmetadata = null;
-            this.flashVideo.onerror          = null;
-            this.flashImage.onload           = null;
-            this.flashImage.onerror          = null;
+            this.#flashVideo.onended          = null;
+            this.#flashVideo.onloadedmetadata = null;
+            this.#flashVideo.onerror          = null;
+            this.#flashImage.onload           = null;
+            this.#flashImage.onerror          = null;
         }
         if (ch[2] != 0) {
-            this.flashVideo.removeAttribute('src');
-            this.flashImage.removeAttribute('src');
-            this.flashVideo.load();
+            this.#flashVideo.removeAttribute('src');
+            this.#flashImage.removeAttribute('src');
+            this.#flashVideo.load();
         }
 
         // notif si succès/échec (dans flashDone.then ou .catch)
@@ -461,10 +423,6 @@ class WebFlash extends HTMLElement {
         }
     }
 
-    // ===============================================================================================
-    // 6. GESTION FULLSCREEN
-    // ===============================================================================================
-
     #flashScale(media) {
         if (!media || !this.#sessionId) return;
 
@@ -472,43 +430,42 @@ class WebFlash extends HTMLElement {
         const originalH = media.tagName === 'IMG' ? media.naturalHeight : media.videoHeight;
         if (originalW === 0 || originalH === 0) return;
 
-        this.flashWrapper.style.setProperty('--natW', originalW);
-        this.flashWrapper.style.setProperty('--natH', originalH);
+        this.#flashWrapper.style.setProperty('--natW', originalW);
+        this.#flashWrapper.style.setProperty('--natH', originalH);
 
         this.#flashAjusterTitre();
     }
 
     #flashAjusterTitre(charsPerLine = 40) {
-        if (!this.#sessionId || !this.flashTitre.textContent) return;
+        if (!this.#sessionId || !this.#flashTitre.textContent) return;
 
-        const w = this.flashWrapper.offsetWidth  || window.innerWidth;
-        const h = this.flashWrapper.offsetHeight || window.innerHeight;
+        const w = this.#flashWrapper.offsetWidth  || window.innerWidth;
+        const h = this.#flashWrapper.offsetHeight || window.innerHeight;
         if (w === 0 || h === 0) return;
 
         const largeurRef = Math.min(Math.max(w, h), window.innerWidth);
         const largeurFinale = largeurRef * 0.95;
 
-        this.flashTitre.style.setProperty('--finalWidth', `${largeurFinale}px`);
-        this.flashTitre.style.setProperty('--charsLine', charsPerLine);
-        this.flashTitre.style.fontSize = "";
+        this.#flashTitre.style.setProperty('--finalWidth', `${largeurFinale}px`);
+        this.#flashTitre.style.setProperty('--charsLine', charsPerLine);
+        this.#flashTitre.style.fontSize = "";
 
         requestAnimationFrame(() => {
             const hauteurMax = h * 0.8;
 
-            if (this.flashTitre.offsetHeight > hauteurMax) {
-                const tailleActuelle = parseFloat(getComputedStyle(this.flashTitre).fontSize);
-                const ratio = hauteurMax / this.flashTitre.offsetHeight;
-                this.flashTitre.style.fontSize = `${Math.max(tailleActuelle * ratio, 10)}px`;
+            if (this.#flashTitre.offsetHeight > hauteurMax) {
+                const tailleActuelle = parseFloat(getComputedStyle(this.#flashTitre).fontSize);
+                const ratio = hauteurMax / this.#flashTitre.offsetHeight;
+                this.#flashTitre.style.fontSize = `${Math.max(tailleActuelle * ratio, 10)}px`;
             }
         });
     }
 
     /* ========== API PUBLIQUE ========== */
+    start() { return this.#flashStart(); }
+    reload() { return this.#flashStart(true); }
 
-    // ===============================================================================================
-    // 7. UTILITAIRES
-    // ===============================================================================================
-
+    stop() { this.#flashStop(1); }
     whenFlashDone() {
         if (this.#resolveDone) this.removeEventListener('flashSucces', this.#resolveDone);
         if (this.#rejectDone)  this.removeEventListener('flashEchec',  this.#rejectDone);
@@ -521,7 +478,7 @@ class WebFlash extends HTMLElement {
         });
     }
 
-    formatage(str) {
+    formater(str) {
         str = String(str).trim()
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
@@ -534,29 +491,33 @@ class WebFlash extends HTMLElement {
             '-': 's'
         };
         const spChrs = Object.keys(sym).join("");
-        const regex = new RegExp(`(?<=(?:([\\s${spChrs}])|>|^))([${spChrs}])(\\S(.*?\\S)?)\\2(?=(?:\\1|<|$))`, "g"); // un passage encadré par un des spChrs (ex: *mot*, -une phrase-)
+        const regex = new RegExp(`(?<=(?:([\\s${spChrs}])|>|^))([${spChrs}])(\\S(.*?\\S)?)\\2(?=(?:\\1|<|$))`, "g");
 
         return str.replace(regex, (match, _, signe, contenu) => {
             let tag = sym[signe];
-            const imbrique = this.formatage(contenu);
+            const imbrique = this.formater(contenu);
             return `<${tag}>${imbrique}</${tag}>`;
         });
     }
 
-    resetConfig() {
-        this.flashConfig = structuredClone(flashConfig_default);
-    }
-
     setStyle(cible, styles) {
         const cibles = {
-            'webflash': this.#flash,
-            'titre':    this.#flashTitre,
-            'image':    this.#flashImage,
-            'video':    this.#flashVideo
+            'flash': this.#flash,
+            'titre': this.#flashTitre,
+            'image': this.#flashImage,
+            'video': this.#flashVideo
         };
         const el = cibles[cible];
-        if (!el) throw new Error(`Webflasher: cible "${cible}" inconnue`);
+        if (!el) throw new Error(`cible "${cible}" inconnue`);
         Object.assign(el.style, styles);
+    }
+
+    resetStyles() {
+        [this.#flash, this.#flashTitre, this.#flashImage, this.#flashVideo, this.#flashWrapper].forEach(el => el.removeAttribute('style'));
+    }
+
+    resetConfig() {
+        this.config = structuredClone(this.#configDefault);
     }
 
     resetAll() {
@@ -568,6 +529,4 @@ class WebFlash extends HTMLElement {
 
 }
 
-customElements.define('web-flash', WebFlash);
-document.body.appendChild(document.createElement('web-flash'));
-const wf = document.querySelector('web-flash');
+customElements.define('media-flasher', Mediaflasher);
