@@ -5,7 +5,7 @@ Inspiré par "LiveChat" de la Cacabox, WebChatter reprend tout le concept dans u
 > évidemment ya rien d'officiel ici: webchatter est pour moi juste un moyen d'apprendre à coder en javascript.
 
 ## Utilisation
-Après avoir importé la bibliothèque, on pourrait faire un truc comme ça:  
+Une fois la bibliothèque installée, on pourrait faire un truc comme ça:  
 * html:
     ```html
     <web-chatter></web-chatter>
