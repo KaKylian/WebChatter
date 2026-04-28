@@ -32,7 +32,8 @@ les options de config actuelle:
 |`video.vitesse`|nbre [0.1; 16]|sa vitesse de lecture|`1`|
 |`video.isAudio`|booléen|cache la vidéo|`false`|
 |`duree`|nbre > 0 / `"inf"`\* / `auto`\*\*|la durée du livechat (secondes)|`"auto"`|
-\* `inf`: ne s'arrête jamais, \*\*`auto`: s'arrête à la fin de la vidéo ou dure 7s
+
+> \* `inf`: ne s'arrête jamais, \*\*`auto`: s'arrête à la fin de la vidéo ou dure 7s
 
 > [!TIP]
 > Pour forcer l'arrêt d'un livechat en cours on peut utiliser `chatter.stop()`
@@ -41,5 +42,5 @@ les options de config actuelle:
 - [ ] texte barré/souligné moche (`text-decoration` incompatible avec `text-stroke`)
 - [ ] support livechat vidéo + audio (ajouter une balise `<audio>` séparée)
 - [ ] options de formatage de texte (position ? police ? taille ?)
-- [ ] documenter toutes les méthodes dans `web-chatter`
+- [ ] documenter toutes les méthodes de `web-chatter`
 
