@@ -1,4 +1,4 @@
-class Mediaflasher extends HTMLElement {
+class WebChatter extends HTMLElement {
     /* ========== CHAMPS PRIVEES ========== */
     #flash        = null;
     #flashVideo   = null;
@@ -529,4 +529,4 @@ class Mediaflasher extends HTMLElement {
 
 }
 
-customElements.define('media-flasher', Mediaflasher);
+customElements.define('web-chatter', WebChatter);

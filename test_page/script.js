@@ -1,5 +1,5 @@
-import '../mediaflasher.js';
-const wf = document.querySelector('media-flasher');
+import '../webchatter.js';
+const wf = document.querySelector('web-chatter');
 
 /* ==========================================================================
 FLASH CONTROL - Panneau de régie

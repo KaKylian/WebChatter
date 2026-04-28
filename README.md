@@ -1,41 +1,45 @@
-# Mediaflasher 
-mediaflasher.js ajoute un custom element `<media-flasher>` qui a ses propres propriétés et méthodes pour configurer et lire un flash.
-Le flash peut contenir un média (image, vidéo ou image + audio d'une vidéo) avec un titre en incrusté sur le média
+# [pre-alpha] WebChatter
+Inspiré par "LiveChat" de la Cacabox, WebChatter reprend tout le concept dans un widget permettant à un dev de créer et de programmer l'affichage d'un Livechat Cacabox sur son site web, tout ça via une nouvelle balise html `<web-chatter>`.
+
+> [!NOTE]
+> évidemment ya rien d'officiel ici: webchatter est pour moi juste un moyen d'apprendre à coder en javascript.
 
 ## Utilisation
-Exemple simple:
-1. `<body>` html:
-```html
-<media-flasher></media-flasher>
-```
-2. js:
-```js
-const mf = document.querySelector('media-flasher');
+Après avoir importé la bibliothèque, on pourrait faire un truc comme ça:  
+* html:
+    ```html
+    <web-chatter></web-chatter>
+    ```
+* script module:
+    ```js
+    import './webchatter.js';
+    const chatter = document.querySelector('web-chatter');
 
-mf.config.video.src = "video.mp4"; // src vidéo
-mf.config.video.volume = 0.5; // volume vidéo
-mf.config.texte = "boo"; // texte incrusté
-mf.start(); // le flash se ferme tt seul à la fin de la lecture vidéo
-```
-tableau des configs flash:
-|nom|type de val acceptés|rôle|val par défaut|
+    chatter.config.texte = "Titre";
+    chatter.config.video = "video.mp4";
+    chatter.start();
+    // résultat: livechat vidéo affiché en plein écran avec son titre incrusté sur la vidéo
+    ```
+
+les options de config actuelle:
+|nom|type de valeur accepté|rôle|valeur par défaut|
 |---|---|---|---|
-|texte|texte / html|définit le texte|`""`|
-|imagesrc|url|définit la src image|`""`|
-|video.src|url|définit la src vidéo|`""`|
-|video.time|nbre > 0|timestamp vidéo de départ (s)|`0`|
-|video.volume|nbre [0; 1]|volume de la lecture|`1`|
-|video.vitesse|nbre [0.1; 16]|vitesse de lecture|`1`|
-|video.isAudio|booléen|définit l'affichage de la vidéo|`false`|
-|duree|nbre > 0 / `"inf"`\* / `"auto"`\*\*|durée totale du flash (s)|`"auto"`|
-
-\*`"inf"` = désactive la fermeture auto, \*\*`"auto"` = durée de la vidéo ou 7s
+|`texte`|texte/html|le texte|`""`|
+|`imageSrc`|url|la src image|`""`|
+|`video.src`|url|la src vidéo|`""`|
+|`video.time`|nbre >= 0|timestamp de départ (secondes)|`0`|
+|`video.volume`|nbre [0; 1]|son volume|`1`|
+|`video.vitesse`|nbre [0.1; 16]|sa vitesse de lecture|`1`|
+|`video.isAudio`|booléen|cache la vidéo|`false`|
+|`duree`|nbre > 0 / `"inf"`\* / `auto`\*\*|la durée du livechat (secondes)|`"auto"`|
+\* `inf`: ne s'arrête jamais, \*\*`auto`: s'arrête à la fin de la vidéo ou dure 7s
 
 > [!TIP]
-> on peut forcer l'arrêt d'un flash en cours à n'importe quel moment avec la méthode `stop()`
+> Pour forcer l'arrêt d'un livechat en cours on peut utiliser `chatter.stop()`
 
 ## Todo
-- [ ] Issue: texte barré/souligné moche (`text-decoration` incompatible avec `text-stroke`)
-- [ ] Ajout: fonctionnalité flash audio + vidéo (ajouter une balise `<audio>` séparée)
-- [ ] Ajout: options de styles intégrés
-- [ ] Ajout: documentation des méthodes `media-flasher`
+- [ ] texte barré/souligné moche (`text-decoration` incompatible avec `text-stroke`)
+- [ ] support livechat vidéo + audio (ajouter une balise `<audio>` séparée)
+- [ ] options de formatage de texte (position ? police ? taille ?)
+- [ ] documenter toutes les méthodes dans `web-chatter`
+
