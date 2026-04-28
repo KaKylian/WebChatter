@@ -21,19 +21,20 @@ Après avoir importé la bibliothèque, on pourrait faire un truc comme ça:
     // résultat: livechat vidéo affiché en plein écran avec son titre incrusté sur la vidéo
     ```
 
-les options de config actuelle:
+Toutes les options dans `chatter.config`:
 |nom|type de valeur accepté|rôle|valeur par défaut|
 |---|---|---|---|
-|`texte`|texte/html|le texte|`""`|
+|`texte`|texte / html|le texte|`""`|
 |`imageSrc`|url|la src image|`""`|
 |`video.src`|url|la src vidéo|`""`|
 |`video.time`|nbre >= 0|timestamp de départ (secondes)|`0`|
 |`video.volume`|nbre [0; 1]|son volume|`1`|
 |`video.vitesse`|nbre [0.1; 16]|sa vitesse de lecture|`1`|
 |`video.isAudio`|booléen|cache la vidéo|`false`|
-|`duree`|nbre > 0 / `"inf"`\* / `auto`\*\*|la durée du livechat (secondes)|`"auto"`|
+|`duree`|nbre > 0 / `"inf"`\* / `"auto"`\*\*|la durée du livechat (secondes)|`"auto"`|
 
-> \* `inf`: ne s'arrête jamais, \*\*`auto`: s'arrête à la fin de la vidéo ou dure 7s
+> \*`"inf"`: le livechat ne s'arrête pas: si ya une vidéo elle boucle à l'infini  
+> \*\*`"auto"`: ferme le livechat à la fin de la lecture vidéo ou au bout de 7s
 
 > [!TIP]
 > Pour forcer l'arrêt d'un livechat en cours on peut utiliser `chatter.stop()`
@@ -43,4 +44,3 @@ les options de config actuelle:
 - [ ] support livechat vidéo + audio (ajouter une balise `<audio>` séparée)
 - [ ] options de formatage de texte (position ? police ? taille ?)
 - [ ] documenter toutes les méthodes de `web-chatter`
-
