@@ -30,7 +30,7 @@ Toutes les options dans `chatter.config`:
 |`video.isAudio`|booléen|cache la vidéo|`false`|
 |`duree`|nbre > 0 / `"inf"`\* / `"auto"`\*\*|la durée de l'affichage (secondes)|`"auto"`|
 
-> \*`"inf"`: le livechat ne s'arrête pas: si ya une vidéo elle boucle à l'infini  
+> \*`"inf"`: l'affichage ne s'arrête pas: si ya une vidéo elle boucle à l'infini  
 > \*\*`"auto"`: arrête l'affichage à la fin de la lecture vidéo ou au bout de 7s
 
 > [!TIP]
